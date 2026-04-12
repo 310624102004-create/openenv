@@ -84,6 +84,7 @@ codedebug-env/
 ├── inference.py                 # LLM agent evaluation harness
 ├── validate_submission.py       # Pre-submission validator
 ├── app.py                       # Docker entrypoint
+├── openenv.yaml                 # OpenEnv metadata/spec file
 ├── manifest.json                # OpenEnv manifest
 ├── Dockerfile
 ├── pyproject.toml
@@ -262,18 +263,14 @@ python inference.py
 ```
 
 ### Structured log format
-Every line on stdout is valid JSON:
-```json
-{"tag": "[START]", "tasks": ["task_syntax_001"], "model": "gpt-4o-mini", "timestamp": 1700000000.0}
-{"tag": "[STEP]",  "task_id": "task_syntax_001", "step": 1, "composite_score": 0.9553, "done": false}
-{"tag": "[END]",   "total_tasks": 3, "solved": 2, "avg_best_score": 0.7812, "elapsed_seconds": 8.1}
+Every line on stdout must follow the fixed text format expected by the benchmark:
+```text
+[START] task=task_syntax_001 env=codedebug-env model=gpt-4o-mini
+[STEP] step=1 action=def multiply(a, b):\n    return a * b reward=1.00 done=true error=null
+[END] success=true steps=1 score=1.00 rewards=1.00
 ```
 
-Parse with jq:
-```bash
-python inference.py | jq 'select(.tag == "[END]")'
-python inference.py | jq 'select(.tag == "[STEP]") | .composite_score'
-```
+The script must not emit extra stdout lines beyond `[START]`, `[STEP]`, and `[END]`.
 
 ---
 
@@ -298,7 +295,7 @@ python validate_submission.py --minimal --verbose
 
 The validator runs 8 check groups:
 1. Required environment variables
-2. OpenEnv manifest sanity
+2. OpenEnv spec files and manifest sanity
 3. Typed Pydantic models
 4. Endpoint smoke tests (in-process, no server needed)
 5. HF Space ping (optional)
@@ -365,6 +362,7 @@ pinned: false
 - [ ] `python inference.py --max-steps 1` → emits `[START]`, `[STEP]`, `[END]`
 - [ ] `docker build -t codedebug-env .` → exits 0
 - [ ] `docker run -p 7860:7860 codedebug-env` starts and `/health` returns 200
+- [ ] `openenv.yaml` present at repo root
 - [ ] `manifest.json` present with all required keys
 - [ ] At least **3 tasks** in `TASK_REGISTRY`
 - [ ] At least **3 graders** in `GRADER_REGISTRY`

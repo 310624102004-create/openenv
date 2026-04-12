@@ -69,12 +69,14 @@ def check_env_vars(v: Validator) -> None:
 
 
 def check_manifest(v: Validator) -> None:
-    print("\n-- 2. OpenEnv Manifest --")
+    print("\n-- 2. OpenEnv Spec Files --")
+    for filename in ["openenv.yaml", "manifest.json"]:
+        path = os.path.join(_here, filename)
+        exists = os.path.exists(path)
+        v._add(f"{filename} exists", exists, "present" if exists else "not found at project root")
     path = os.path.join(_here, "manifest.json")
     if not os.path.exists(path):
-        v._add("manifest.json exists", False, "not found at project root")
         return
-    v._add("manifest.json exists", True)
     try:
         data = json.loads(open(path).read())
         v._add("manifest.json valid JSON", True)

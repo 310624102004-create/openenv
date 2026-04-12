@@ -169,6 +169,14 @@ class CodeDebugEnvironment:
             history=list(self._history),
         )
 
+    def close(self) -> None:
+        """Release any environment resources.
+
+        The current implementation is in-process and does not hold external
+        resources, so this is intentionally a no-op.
+        """
+        return None
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------

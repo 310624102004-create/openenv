@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 COPY manifest.json .
+COPY openenv.yaml .
 COPY app.py .
 
 USER appuser

@@ -93,6 +93,17 @@ class Action(BaseModel):
     }}}
 
 
+class Reward(BaseModel):
+    """Typed reward payload used by the environment and documentation."""
+
+    value: float = Field(..., ge=0.0, le=1.0, description="Primary scalar reward value.")
+    components: Dict[str, float] = Field(
+        default_factory=dict,
+        description="Optional component scores that explain the final reward.",
+    )
+    solved: bool = Field(False, description="Whether the episode satisfied the task objective.")
+
+
 # ---------------------------------------------------------------------------
 # StepResult — wraps Observation after a step
 # ---------------------------------------------------------------------------
