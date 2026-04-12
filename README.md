@@ -1,3 +1,18 @@
+---
+title: OpenEnv CodeDebug Environment
+emoji: "🐛"
+colorFrom: blue
+colorTo: green
+license: mit
+tags:
+  - openenv
+  - code-debugging
+  - fastapi
+  - python
+language:
+  - en
+---
+
 # 🐛 CodeDebug — OpenEnv Hackathon Environment
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org)
