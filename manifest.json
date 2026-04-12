@@ -1,0 +1,53 @@
+{
+  "name": "codedebug-env",
+  "version": "1.0.0",
+  "description": "An OpenEnv-compliant environment for training LLM agents to debug Python code.",
+  "author": "Giridharan",
+  "license": "MIT",
+  "tags": ["debugging", "python", "code", "llm", "reinforcement-learning"],
+  "action_schema": {
+    "type": "object",
+    "properties": {
+      "fixed_code":   { "type": "string", "description": "The agent's corrected Python code." },
+      "explanation":  { "type": "string", "description": "Explanation of changes made." },
+      "confidence":   { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+      "metadata":     { "type": "object" }
+    },
+    "required": ["fixed_code"]
+  },
+  "observation_schema": {
+    "type": "object",
+    "properties": {
+      "task_id":       { "type": "string" },
+      "step":          { "type": "integer", "minimum": 0 },
+      "buggy_code":    { "type": "string" },
+      "error_message": { "type": ["string", "null"] },
+      "error_type":    { "type": "string", "enum": ["syntax", "logic", "runtime"] },
+      "difficulty":    { "type": "string", "enum": ["easy", "medium", "hard"] },
+      "max_steps":     { "type": "integer", "minimum": 1 },
+      "hints":         { "type": "array", "items": { "type": "string" } },
+      "done":          { "type": "boolean" },
+      "reward":        { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+      "metadata":      { "type": "object" }
+    },
+    "required": ["task_id", "step", "buggy_code", "error_type", "difficulty", "done", "reward"]
+  },
+  "endpoints": {
+    "reset": "/reset",
+    "step":  "/step",
+    "state": "/state"
+  },
+  "custom_endpoints": {
+    "health":    "/api/v1/health",
+    "v1_reset":  "/api/v1/reset",
+    "v1_step":   "/api/v1/step",
+    "v1_state":  "/api/v1/state"
+  },
+  "reward": {
+    "min": 0.0,
+    "max": 1.0,
+    "description": "Composite score: 45% output correctness + 25% syntax + 15% similarity + 15% explanation."
+  },
+  "tasks":  { "count": 7, "types": ["syntax", "logic", "runtime"], "difficulties": ["easy","medium","hard"] },
+  "deployment": { "hf_space": "https://huggingface.co/spaces/<username>/codedebug-env", "docker_port": 7860 }
+}
